@@ -62,7 +62,8 @@ class Browser:
         """Wait for network to be idle."""
         if not self.page:
             raise RuntimeError("Browser not initialized")
-        self.page.wait_for_load_state('networkidle', timeout=idle_ms + self.timeout)
+        # Use the idle_ms as the total timeout for network idle state
+        self.page.wait_for_load_state('networkidle', timeout=max(idle_ms, self.timeout))
 
     def screenshot(self, path: str, full_page: bool = True):
         """Capture screenshot.

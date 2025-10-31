@@ -98,10 +98,9 @@ else:
             
             st.json(selectors)
             
-            # Download button
             st.download_button(
                 'Download selectors.json',
-                data=open(selectors_path, 'rb').read(),
+                data=open(selectors_path, 'rb').read() if selectors_path.exists() else b'{}',
                 file_name='selectors.json',
                 mime='application/json'
             )

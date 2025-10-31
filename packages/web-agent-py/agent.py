@@ -264,7 +264,12 @@ def run(task_path: str) -> Path:
                 # Check if action failed and should stop
                 if not result.get('success', False):
                     if action.get('type') == 'assert':
-                        # Assertions can fail - continue but note it
+                        # Assertions can fail - log but continue
+                        evidence.add_reasoning(i, 'assertion_failed', 
+                                             f"Assertion failed: {result.get('error', 'unknown')}", 
+                                             "continuing")
+                    else:
+                        # Other failures are logged in the action itself
                         pass
             
             # Get final state before closing browser
