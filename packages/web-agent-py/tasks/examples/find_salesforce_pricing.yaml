@@ -1,0 +1,60 @@
+version: 1
+id: find_salesforce_pricing
+goal: >-
+  Navigate to https://www.salesforce.com and find the primary Pricing page CTA button.
+  Click into Pricing, extract the button's selector(s), verify page title contains 'Pricing',
+  then capture a screenshot and DOM, and return proof artifacts.
+constraints:
+  max_steps: 20
+  site_allowlist:
+    - "salesforce.com"
+  block_dialogs: true
+success_criteria:
+  - Reached a URL that matches /pricing/i
+  - Captured a screenshot of the pricing page
+  - Collected at least one robust selector for the Pricing CTA
+deliverables:
+  - screenshot
+  - dom
+  - selector_map
+  - har
+  - reasoning_log
+start:
+  url: "https://www.salesforce.com/"
+accommodations:
+  # resilience knobs
+  slow_network_ms: 0
+  retries_per_action: 2
+  wait_for_idle_network_ms: 2000
+extract:
+  selectors:
+    - name: PricingCTA
+      strategies:
+        - aria: "Pricing"
+        - text: "Pricing"
+        - role: "link[name=/pricing/i]"
+        - css: "a[href*='pricing']"
+        - xpath: "//a[contains(translate(., 'PRICING', 'pricing'), 'pricing')]"
+  fields:
+    - name: PageTitle
+      method: document.title
+actions:
+  - id: a1
+    type: goto
+    target: ${start.url}
+  - id: a2
+    type: wait_for
+    condition: network_idle
+  - id: a3
+    type: find_and_click
+    target_selector_names: [PricingCTA]
+  - id: a4
+    type: assert
+    condition: url_includes
+    value: "pricing"
+  - id: a5
+    type: capture
+    what: [screenshot, dom, har]
+  - id: a6
+    type: extract
+    what: [PageTitle, PricingCTA]

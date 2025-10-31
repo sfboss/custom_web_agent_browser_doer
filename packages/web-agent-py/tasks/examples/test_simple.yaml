@@ -1,0 +1,44 @@
+version: 1
+id: test_simple
+goal: >-
+  Simple test task that navigates to example.com
+constraints:
+  max_steps: 10
+  site_allowlist:
+    - "example.com"
+  block_dialogs: true
+success_criteria:
+  - Reached example.com
+  - Captured a screenshot
+deliverables:
+  - screenshot
+  - dom
+  - reasoning_log
+start:
+  url: "https://example.com/"
+accommodations:
+  slow_network_ms: 0
+  retries_per_action: 2
+  wait_for_idle_network_ms: 2000
+extract:
+  selectors:
+    - name: MoreInfo
+      strategies:
+        - text: "More information"
+        - css: "a[href*='iana']"
+  fields:
+    - name: PageTitle
+      method: document.title
+actions:
+  - id: a1
+    type: goto
+    target: ${start.url}
+  - id: a2
+    type: wait_for
+    condition: network_idle
+  - id: a3
+    type: capture
+    what: [screenshot, dom]
+  - id: a4
+    type: extract
+    what: [PageTitle]
